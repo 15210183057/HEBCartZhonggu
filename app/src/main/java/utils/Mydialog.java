@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 
 /**

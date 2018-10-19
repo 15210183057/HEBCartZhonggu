@@ -9,7 +9,6 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
@@ -24,7 +23,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import java.io.File;
 

@@ -9,13 +9,12 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -24,7 +23,6 @@ import org.xutils.x;
 import java.util.List;
 
 import bean.BuCartListBean;
-import bean.CarBean;
 import bean.UserBean;
 import utils.Mydialog;
 import jiekou.getInterface;
@@ -110,7 +108,7 @@ public class MyLvAdapter3 extends BaseAdapter{
         holder.tv_time.setText("采集时间："+list.get(i).time);
         holder.tv_user.setText("采集员："+ UserBean.username);
         holder.tv_price.setText("价格："+list.get(i).price+"万");
-        Glide.with(ctx).load(list.get(i).img1).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(holder.img_item_mylv);
+        Glide.with(ctx).load(list.get(i).img1+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(holder.img_item_mylv);
         return view;
     }
     public class ViewHolder{

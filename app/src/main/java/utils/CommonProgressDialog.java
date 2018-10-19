@@ -13,7 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import java.text.NumberFormat;
 

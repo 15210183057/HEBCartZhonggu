@@ -25,7 +25,7 @@ public class Utils {
     }
 
     /**
-     * ¼ÆËã½¹µã¼°²â¹âÇøÓò
+     *   ï¿½ï¿½ï¿½ã½¹ï¿½ã¼°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      *
      * @param focusWidth
      * @param focusHeight
@@ -36,7 +36,7 @@ public class Utils {
      * @param previewRight
      * @param previewTop
      * @param previewBottom
-     * @return Rect(left,top,right,bottom) : left¡¢top¡¢right¡¢bottomÊÇÒÔÏÔÊ¾ÇøÓòÖÐÐÄÎªÔ­µãµÄ×ø±ê
+     * @return Rect(left,top,right,bottom) : leftï¿½ï¿½topï¿½ï¿½rightï¿½ï¿½bottomï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎªÔ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
      */
     public static Rect calculateTapArea(int focusWidth, int focusHeight,
                                         float areaMultiple, float x, float y, int previewleft,
@@ -66,7 +66,7 @@ public class Utils {
     }
 
     /**
-     * ¼ì²âÉãÏñÍ·Éè±¸ÊÇ·ñ¿ÉÓÃ
+     * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½è±¸ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
      * Check if this device has a camera
      * @param context
      * @return
@@ -105,7 +105,7 @@ public class Utils {
     }
 
     /**
-     * bitmapÐý×ª
+     * bitmapï¿½ï¿½×ª
      * @param b
      * @param degrees
      * @return
@@ -118,11 +118,11 @@ public class Utils {
                 Bitmap b2 = Bitmap.createBitmap(
                         b, 0, 0, b.getWidth(), b.getHeight(), m, true);
                 if (b != b2) {
-                    b.recycle();  //Android¿ª·¢ÍøÔÙ´ÎÌáÊ¾Bitmap²Ù×÷ÍêÓ¦¸ÃÏÔÊ¾µÄÊÍ·Å
+                    b.recycle();  //Androidï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ù´ï¿½ï¿½ï¿½Ê¾Bitmapï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½Ê¾ï¿½ï¿½ï¿½Í·ï¿½
                     b = b2;
                 }
             } catch (OutOfMemoryError ex) {
-                // Android123½¨Òé´ó¼ÒÈçºÎ³öÏÖÁËÄÚ´æ²»×ãÒì³££¬×îºÃreturn Ô­Ê¼µÄbitmap¶ÔÏó¡£.
+                // Android123ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ú´æ²»ï¿½ï¿½ï¿½ì³£ï¿½ï¿½ï¿½ï¿½ï¿½return Ô­Ê¼ï¿½ï¿½bitmapï¿½ï¿½ï¿½ï¿½.
             }
         }
         return b;

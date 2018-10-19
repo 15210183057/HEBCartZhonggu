@@ -28,25 +28,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.example.a123456.cartzhonggu.R;
-import com.example.a123456.cartzhonggu.SettingActivity;
+import com.example.a123456.hebcartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.SettingActivity;
 
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 
 import bean.BUCartListBeanNUm;
 import camera.FileUtil;
 import mycamare.TakePhoteActivity;
 import View.CircleImageView;
-import utils.BitZip;
 
 import static com.bumptech.glide.gifdecoder.GifHeaderParser.TAG;
 

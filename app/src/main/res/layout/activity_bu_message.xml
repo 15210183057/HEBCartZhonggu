@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.a123456.cartzhonggu.BuMessageActivity">
+    tools:context="com.example.a123456.hebcartzhonggu.BuMessageActivity">
     <include
         layout="@layout/top_titlebar"/>
     <ScrollView

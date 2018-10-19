@@ -2,12 +2,10 @@ package camera;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,37 +13,20 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import View.GetJsonUtils;
 
-import org.json.JSONObject;
 import org.xutils.common.Callback;
-import org.xutils.http.HttpMethod;
 import org.xutils.http.RequestParams;
-import org.xutils.http.annotation.HttpResponse;
-import org.xutils.http.body.FileBody;
-import org.xutils.http.body.StringBody;
 import org.xutils.x;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import bean.JaShiZhengBean;
 import jiekou.getInterface;
-import mycamare.utils.Utils;
-import utils.BitToByte;
 import utils.Mydialog;
 
 public class ShowImageActivity extends Activity {

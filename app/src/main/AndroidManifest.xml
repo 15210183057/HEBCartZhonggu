@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.a123456.cartzhonggu">
+    package="com.example.a123456.hebcartzhonggu">
 
     <!-- 保持手机唤醒 -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -25,17 +25,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name="com.example.a123456.hebcartzhonggu.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MySerchActvity" />
-        <activity android:name=".FrameActivity"
+        <activity android:name="com.example.a123456.hebcartzhonggu.MySerchActvity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.FrameActivity"
             android:windowSoftInputMode="stateHidden|adjustPan"/>
-        <activity android:name=".SettingActivity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.SettingActivity" />
         <activity
             android:name="mycamare.TakePhoteActivity"
             android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
@@ -44,21 +44,21 @@
         <activity
             android:name="mycamare.ShowCropperedActivity"
             android:label="@string/title_activity_show_croppered" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".TestActivity" />
-        <activity android:name=".WebViewActivity" />
-        <activity android:name=".CartListInfoMsgActivity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.LoginActivity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.TestActivity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.WebViewActivity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.CartListInfoMsgActivity" />
         <!-- 获取vin码的三条 -->
         <activity android:name="camera.CameraActivity" />
         <activity android:name="camera.ShowImageActivity" />
 
         <service android:name="camera.CameraInterface" />
 
-        <activity android:name=".CartModelActivity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.CartModelActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.example.a123456.cartzhonggu.fileprovider"
+            android:authorities="com.example.a123456.hebcartzhonggu.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -66,9 +66,9 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".AddCartActivity" />
-        <activity android:name=".CartFenLei" />
-        <activity android:name=".BuMessageActivity"></activity>
+        <activity android:name="com.example.a123456.hebcartzhonggu.AddCartActivity" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.CartFenLei" />
+        <activity android:name="com.example.a123456.hebcartzhonggu.BuMessageActivity"></activity>
     </application>
 
 </manifest>

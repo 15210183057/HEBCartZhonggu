@@ -11,12 +11,11 @@ import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import java.util.List;
 
 import bean.BuCartListBean;
-import bean.CarBean;
 import bean.UserBean;
 import utils.newAlert;
 
@@ -93,7 +92,7 @@ public class MyLvAdapter extends BaseAdapter{
         holder.tv_time.setText("采集时间："+list.get(i).time);
         holder.tv_user.setText("采集员："+ UserBean.username);
         holder.tv_price.setText("价格："+list.get(i).price+"万");
-        Glide.with(ctx).load(list.get(i).img1).placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(holder.img_item_mylv);
+        Glide.with(ctx).load(list.get(i).img1+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(holder.img_item_mylv);
         return view;
     }
     public class ViewHolder{

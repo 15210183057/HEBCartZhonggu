@@ -42,10 +42,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.example.a123456.cartzhonggu.CartModelActivity;
-import com.example.a123456.cartzhonggu.CartFenLei;
-import com.example.a123456.cartzhonggu.MySerchActvity;
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.CartModelActivity;
+import com.example.a123456.hebcartzhonggu.CartFenLei;
+import com.example.a123456.hebcartzhonggu.MySerchActvity;
+import com.example.a123456.hebcartzhonggu.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

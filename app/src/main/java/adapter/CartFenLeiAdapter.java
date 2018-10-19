@@ -8,12 +8,11 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import java.util.List;
 
 import bean.CartFenleiBean;
-import bean.SeriseBean;
 
 /**
  * Created by 123456 on 2018/2/11.

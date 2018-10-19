@@ -1,7 +1,6 @@
 package adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -9,13 +8,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import java.util.List;
 
 import bean.Bran;
-import bean.BuCartListBean;
-import bean.CarBean;
 import bean.UserBean;
 
 public class MyLvFrag2Adapter extends BaseAdapter {

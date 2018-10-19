@@ -15,10 +15,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a123456.cartzhonggu.BuMessageActivity;
-import com.example.a123456.cartzhonggu.CartListInfoMsgActivity;
-import com.example.a123456.cartzhonggu.R;
-import com.example.a123456.cartzhonggu.WebViewActivity;
+import com.example.a123456.hebcartzhonggu.BuMessageActivity;
+import com.example.a123456.hebcartzhonggu.R;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
@@ -34,10 +32,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import adapter.MyLvAdapter;
-import adapter.MyLvAdapter3;
 import bean.BUCartListBeanNUm;
 import bean.BuCartListBean;
-import bean.CarBean;
 import bean.UserBean;
 import jiekou.getInterface;
 import View.GetJsonUtils;

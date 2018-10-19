@@ -1,9 +1,7 @@
 package fragment;
 
 
-import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,8 +17,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a123456.cartzhonggu.BuMessageActivity;
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
@@ -42,16 +39,13 @@ import java.util.List;
 import adapter.MyLvFrag2Adapter;
 import bean.BeanFlag;
 import bean.Bran;
-import bean.BuCartListBean;
 import bean.CarBean;
-import bean.MyNewUpdate;
 import bean.UserBean;
 import bean.ZHFBean;
 import bean.ZQBean;
 import bean.ZQFBean;
 import utils.MyDBUtils;
 import jiekou.getInterface;
-import utils.MySuccess;
 import View.GetJsonUtils;
 import utils.Mydialog;
 

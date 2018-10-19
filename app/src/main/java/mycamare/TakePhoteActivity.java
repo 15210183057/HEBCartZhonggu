@@ -44,7 +44,7 @@ import mycamare.camare.CameraPreview;
 import mycamare.camare.FocusView;
 import mycamare.cropper.CropImageView;
 import mycamare.utils.Utils;
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 /**
  * @Class: TakePhoteActivity
  * @Description: ���ս���

@@ -9,8 +9,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.a123456.cartzhonggu.R;
-import com.example.a123456.cartzhonggu.AddCartActivity;
+import com.example.a123456.hebcartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.AddCartActivity;
 
 /**
  * Created by 123456 on 2018/2/26.

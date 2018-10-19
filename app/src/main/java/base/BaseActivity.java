@@ -1,12 +1,11 @@
 package base;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import utils.StatusBarCompat;
 

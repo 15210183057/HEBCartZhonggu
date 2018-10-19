@@ -1,22 +1,15 @@
 package utils;
 
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 
-import com.example.a123456.cartzhonggu.R;
-
-import base.BaseActivity;
-import fragment.Fragment3;
+import com.example.a123456.hebcartzhonggu.R;
 
 /**
  * Created by 123456 on 2018/2/11.

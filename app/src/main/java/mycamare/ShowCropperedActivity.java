@@ -15,7 +15,7 @@ import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 
 
-import com.example.a123456.cartzhonggu.R;
+import com.example.a123456.hebcartzhonggu.R;
 
 import mycamare.utils.Utils;
 
