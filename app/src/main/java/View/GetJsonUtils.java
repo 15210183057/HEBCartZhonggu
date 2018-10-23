@@ -671,11 +671,16 @@ public class GetJsonUtils {
                     buCartListBean.img3 = jsonObject3.getString("zhenghou");
                     if(pic.contains("youhou45")) {
                         buCartListBean.img4 = jsonObject3.getString("youhou45");
-                        buCartListBean.img5 = jsonObject3.getString("fadongji");
+                        if(pic.contains("fadongji")) {
+                            buCartListBean.img5 = jsonObject3.getString("fadongji");
+                        }
                         buCartListBean.img6 = jsonObject3.getString("luntai");
                         buCartListBean.img7 = jsonObject3.getString("toudeng");
                         buCartListBean.img8 = jsonObject3.getString("weideng");
-                        buCartListBean.img9 = jsonObject3.getString("yibiaopan");
+                        if(pic.contains("yibiaopan")) {
+                            buCartListBean.img9 = jsonObject3.getString("yibiaopan");
+
+                        }
                     }
                 }
 //                Log.e("TAG","buCartListBean.img3=="+buCartListBean.img3);

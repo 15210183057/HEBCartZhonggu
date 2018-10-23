@@ -45,7 +45,7 @@ public class MyLvAdapter extends BaseAdapter{
     public View getView(final int i, View view, ViewGroup viewGroup) {
         ViewHolder holder;
         if(view==null){
-            view= View.inflate(ctx, R.layout.item_mylv2,null);
+            view= View.inflate(ctx, R.layout.item_mylvf1,null);
            holder=new ViewHolder();
             holder.tv_name=view.findViewById(R.id.tv_name_mylvitem);
             holder.tv_num1=view.findViewById(R.id.tv_num_mylvitem);
@@ -75,6 +75,7 @@ public class MyLvAdapter extends BaseAdapter{
         str=str.replace("（","");
         holder.tv_name.setText(str);
         holder.tv_company.setText(list.get(i).name);
+//        holder.tv_num1.setText(list.get(i).vin.substring(list.get(i).vin.length()-6));显示VIN码后六位
         holder.tv_num1.setText(list.get(i).vin);
         holder.tv_num2.setText(list.get(i).licensePlate);
 

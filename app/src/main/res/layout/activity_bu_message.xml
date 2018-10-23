@@ -15,13 +15,56 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="10dp">
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/tv_xing"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="*"
+                    android:textSize="16sp"
+                    android:textColor="@color/titleBar"
+                    android:layout_marginLeft="5dp"
+                    android:layout_centerVertical="true"/>
+                <RelativeLayout
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:id="@+id/relative_saomiao"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_alignParentRight="true"
+                    android:background="@color/titleBar">
+                    <ImageView
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:src="@mipmap/saoyisao"
+                        android:layout_centerInParent="true"
+                        />
+                </RelativeLayout>
 
+                <TextView
+                    android:hint="请扫描二维码获取车源编号"
+                    android:id="@+id/tv_carnum"
+                    android:layout_toRightOf="@id/tv_xing"
+                    android:layout_toLeftOf="@id/relative_saomiao"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:textSize="14sp"
+                    android:gravity="center_vertical"
+                    android:background="@drawable/juxingnull"
+                    />
+            </RelativeLayout>
             <!-- TODO: Update blank fragment layout -->
             <LinearLayout
                 android:id="@+id/linear_celiang"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
+
 
                 <LinearLayout
                     android:layout_marginTop="5dp"
@@ -110,6 +153,7 @@
                         android:background="@drawable/juxingnull"
                         />
                 </RelativeLayout>
+
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -352,12 +396,32 @@
                                 android:src="@drawable/zq45d"
                                 android:scaleType="fitXY"
                                 android:id="@+id/img_newfragment"/>
-                            <TextView
-                                android:layout_marginTop="10dp"
-                                android:layout_gravity="center_horizontal"
+                            <RelativeLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="左前45°"/>
+                                android:orientation="horizontal"
+                                android:layout_gravity="center_horizontal"
+
+                                >
+
+                                <TextView
+                                    android:layout_marginTop="10dp"
+                                    android:layout_gravity="center"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="左前45°"
+                                    android:id="@+id/tv_zuqian45"/>
+                                <TextView
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_toRightOf="@id/tv_zuqian45"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="*"
+                                    android:layout_centerVertical="true"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/titleBar"/>
+                            </RelativeLayout>
+
                         </LinearLayout>
                         <LinearLayout
                             android:layout_width="0dp"
@@ -372,12 +436,32 @@
                                 android:src="@drawable/zqf"
                                 android:scaleType="fitXY"
                                 android:id="@+id/img2_newfragment"/>
-                            <TextView
-                                android:layout_marginTop="10dp"
-                                android:layout_gravity="center_horizontal"
+                            <RelativeLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="正前"/>
+                                android:orientation="horizontal"
+                                android:layout_gravity="center_horizontal"
+
+                                >
+
+                                <TextView
+                                    android:layout_marginTop="10dp"
+                                    android:layout_gravity="center"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="正前"
+                                    android:id="@+id/tv_zhengqian"/>
+                                <TextView
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_toRightOf="@id/tv_zhengqian"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="*"
+                                    android:layout_centerVertical="true"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/titleBar"/>
+                            </RelativeLayout>
+
                         </LinearLayout>
                         <LinearLayout
                             android:layout_width="0dp"
@@ -392,12 +476,32 @@
                                 android:src="@drawable/zhf"
                                 android:scaleType="fitXY"
                                 android:id="@+id/img3_newfragment"/>
-                            <TextView
-                                android:layout_marginTop="10dp"
+
+                            <RelativeLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
                                 android:layout_gravity="center_horizontal"
-                                android:layout_width="100dp"
-                                android:layout_height="100dp"
-                                android:text="正后"/>
+
+                                >
+
+                                <TextView
+                                    android:layout_marginTop="10dp"
+                                    android:layout_gravity="center"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="正后"
+                                    android:id="@+id/tv_zhenghou"/>
+                                <TextView
+                                    android:layout_marginLeft="5dp"
+                                    android:layout_toRightOf="@id/tv_zhenghou"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="*"
+                                    android:layout_centerVertical="true"
+                                    android:textSize="16sp"
+                                    android:textColor="@color/titleBar"/>
+                            </RelativeLayout>
                         </LinearLayout>
                     </LinearLayout>
                     <LinearLayout

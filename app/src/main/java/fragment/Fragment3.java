@@ -28,6 +28,9 @@ import com.example.a123456.hebcartzhonggu.R;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.bean.ZxingConfig;
+import com.yzq.zxinglibrary.common.Constant;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -43,6 +46,8 @@ import bean.NameAndTel;
 import bean.UserBean;
 import jiekou.getInterface;
 import utils.Mydialog;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -67,6 +72,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     private EditText edt_vin_search;
     List<List<NameAndTel>> NameAndTellist1=new ArrayList<List<NameAndTel>>();
     private LinearLayout linear_search;
+    private int REQUEST_CODE_SCAN = 111;
     public Fragment3() {
         // Required empty public constructor
     }
@@ -97,8 +103,8 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         tv_quyu=view.findViewById(R.id.tv_quyue);
         btn_serach=view.findViewById(R.id.btn_serach);
         btn_clean=view.findViewById(R.id.btn_clean);
-        img_topleft.setVisibility(View.GONE);
-        img_topleft.setText("搜索");
+        img_topleft.setVisibility(View.VISIBLE);
+        img_topleft.setBackgroundResource(R.mipmap.saoyisao);
         tv_topcenter.setText("已上传车源");
 //        img_topright.setVisibility(View.GONE);
         getBuCartList(i);
@@ -146,9 +152,10 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                     public void run() {
 //                        if(i>1){
 //                            i--;
+                        i=1;
                         list.clear();
                         NameAndTellist1.clear();
-                        getBuCartList(1);
+                        getBuCartList(i);
 //                        }
                     }
                 },0);
@@ -347,7 +354,21 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.img_left:
-                linear_search.setVisibility(View.VISIBLE);
+//                linear_search.setVisibility(View.VISIBLE);
+                Log.e("TAG","扫描");
+                Intent intent = new Intent(getActivity(), CaptureActivity.class);
+
+            /*ZxingConfig是配置类  可以设置是否显示底部布局，闪光灯，相册，是否播放提示音  震动等动能
+             * 也可以不传这个参数
+             * 不传的话  默认都为默认不震动  其他都为true
+             * */
+
+                ZxingConfig config = new ZxingConfig();
+                config.setPlayBeep(true);
+                config.setShake(true);
+                intent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
+
+                startActivityForResult(intent, REQUEST_CODE_SCAN);
                 break;
             case R.id.tv_quyue:
                 Intent intentS = new Intent(getContext(), MySerchActvity.class);
@@ -362,8 +383,8 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 Log.e("TAG","开始搜索="+quyu_ID);
                 list.clear();
                 NameAndTellist1.clear();
-                getBuCartList(1);
                 i=1;
+                getBuCartList(i);
 //                linear_search.setVisibility(View.GONE);
                 break;
             case R.id.img_right:
@@ -375,7 +396,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 i=1;
                 list.clear();
                 NameAndTellist1.clear();
-                getBuCartList(1);
+                getBuCartList(i);
                 break;
             case R.id.btn_clean:
                 if(!mydialog.isShowing()){
@@ -386,7 +407,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 i=1;
                 list.clear();
                 NameAndTellist1.clear();
-                getBuCartList(1);
+                getBuCartList(i);
                 break;
         }
 
@@ -397,7 +418,8 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         @Override
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals("delete")) {
-                getBuCartList(1);
+                i=1;
+                getBuCartList(i);
             }
             if(intent.getAction().equals("f3")){
                 String name=intent.getStringExtra("name");
@@ -409,6 +431,30 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
                 }else{
                     btn_serach.setVisibility(View.GONE);
                 }
+            }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        // 扫描二维码/条码回传
+        if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+//                Toast.makeText(getActivity(),"扫描结果为："+content,Toast.LENGTH_SHORT).show();
+                Log.e("TAG", "扫描结果为==" + content);
+//                扫描结果为==http://tjkg.zgcw.cn:9008/carinfo.html?muid=tianjin001&code=5158
+//                Intent intent =new Intent(getActivity(),WebViewActivity.class);
+                Intent intent = new Intent(getActivity(), BuMessageActivity.class);
+                intent.putExtra("url", content);
+                String arr[] = content.split("&");
+                Log.e("TAG", "arr[1]=" + arr[1].toString());//=5158
+                int index = arr[1].toString().indexOf("=");//获取等号的位置
+                String cartID = arr[1].substring(index + 1, arr[1].length());
+                Log.e("TAG", "cartID==" + cartID);
+                intent.putExtra("cartID", cartID);
+                startActivity(intent);
             }
         }
     }

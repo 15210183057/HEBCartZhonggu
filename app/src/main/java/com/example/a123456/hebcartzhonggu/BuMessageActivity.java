@@ -19,6 +19,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -32,10 +33,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.yzq.zxinglibrary.android.CaptureActivity;
+import com.yzq.zxinglibrary.bean.ZxingConfig;
+import com.yzq.zxinglibrary.common.Constant;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -130,8 +135,10 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
     private int imgCount;//记录要修改多少张图片
     Mydialog successdialog;
     int errorCount=0;
-
-
+    private TextView tv_carnum;//车源编号
+    private RelativeLayout relative_saomiao;//扫描获取车源编号
+    private int REQUEST_CODE_SCAN = 111;//扫描状态码
+    private LinearLayout linear_celiang;//中间布局--车源编号以下，里程以上
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,15 +156,19 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         edit_num.setFocusableInTouchMode(false);
         edit_num.setFocusable(false);
         //姓名电话,里程，价格不可修改
-        edt_licheng.setFocusableInTouchMode(false);
-        edt_price.setFocusable(false);
+//        edt_licheng.setFocusableInTouchMode(false);
+//        edt_price.setFocusable(false);
         edt_name.setFocusableInTouchMode(false);
         tv_tel.setFocusable(false);
 
-        if(!TextUtils.isEmpty(str)&&str.equals("true")){
+        if(!TextUtils.isEmpty(str)&&str.equals("true")){//巡场进入，只能查看，不能修改提交
             BeanFlag.Flag=true;
+            linear_celiang.setVisibility(View.VISIBLE);
+            btn_commit.setVisibility(View.GONE);
         }else{
-            BeanFlag.Flag=false;
+            BeanFlag.Flag=false;//首页进入
+            linear_celiang.setVisibility(View.GONE);
+            btn_commit.setVisibility(View.VISIBLE);
         }
         posion=getIntent().getStringExtra("i");
         if(!utils.readXML(MyApplication.cartlistmsg,"count",this).isEmpty()) {
@@ -176,7 +187,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         img_topleft.setOnClickListener(this);
 
         img_topright.setVisibility(View.GONE);
-
+//        img_topright.setImageResource(R.mipmap.saoyisao);//设置右上角扫描图
         tv_getprice=findViewById(R.id.tv_getprice);
         tv_getprice.setOnClickListener(this);
         //所有要填写的控件
@@ -211,6 +222,10 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
 
         Tv_guohu=findViewById(R.id.tv_guohu);//是否过户
 
+        tv_carnum=findViewById(R.id.tv_carnum);//车源编号
+        relative_saomiao=findViewById(R.id.relative_saomiao);//扫描
+        linear_celiang=findViewById(R.id.linear_celiang);//中间布局
+
         img_paizhao.setOnClickListener(this);
 //        tv_time.setOnClickListener(this);
         btn_commit.setOnClickListener(this);
@@ -238,6 +253,8 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
 //        tv_getmodel=findViewById(R.id.tv_getmodel);
 //        tv_getmodel.setOnClickListener(this);
 //        Tv_guohu.setOnClickListener(this);
+        tv_carnum.setOnClickListener(this);
+        relative_saomiao.setOnClickListener(this);
     }
     class MyEditTextChangeListener implements TextWatcher {
         EditText editText;
@@ -271,7 +288,24 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
     }
     @Override
     public void onClick(View view) {
+        Intent SMintent = new Intent(this, CaptureActivity.class);
+
+            /*ZxingConfig是配置类  可以设置是否显示底部布局，闪光灯，相册，是否播放提示音  震动等动能
+             * 也可以不传这个参数
+             * 不传的话  默认都为默认不震动  其他都为true
+             * */
+
+        ZxingConfig config = new ZxingConfig();
+        config.setPlayBeep(true);
+        config.setShake(true);
+        SMintent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
         switch (view.getId()) {
+            case R.id.tv_carnum:
+                startActivityForResult(SMintent, REQUEST_CODE_SCAN);
+                break;
+            case R.id.relative_saomiao:
+                startActivityForResult(SMintent, REQUEST_CODE_SCAN);
+                break;
             case R.id.img_left:
                 finish();
                 break;
@@ -346,7 +380,10 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 Log.e("TAG","点击提交=="+BeanFlag.Flag);
 //                getSubStr(edt_price);
 //                getSubStr(edt_licheng);
-                if (TextUtils.isEmpty(tv_quyue.getText().toString())||tv_quyue.getText().toString().trim().equals("请选择车商信息")){
+                if (TextUtils.isEmpty(tv_carnum.getText().toString())||tv_carnum.getText().toString().trim().equals("请扫描二维码获取车源编号")){
+                    tv_carnum.setBackgroundResource(R.drawable.rednull);
+                    Toast.makeText(this,"车源编号不能为空",Toast.LENGTH_LONG).show();
+                }else if (TextUtils.isEmpty(tv_quyue.getText().toString())||tv_quyue.getText().toString().trim().equals("请选择车商信息")){
                     tv_quyue.setBackgroundResource(R.drawable.rednull);
                     Toast.makeText(this,"车商信息不能为空",Toast.LENGTH_LONG).show();
                 }else if (!IsNullEdit(edit_num)||edit_num.getText().toString().length()!=17){
@@ -377,12 +414,21 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 }
                 else if(!IsNullEdit(edt_price)){
                     Toast.makeText(this,"价格不能为空",Toast.LENGTH_LONG).show();
+                }else if (TextUtils.isEmpty(zqfPath)){
+                    Toast.makeText(this,"左前45°图片不能为空",Toast.LENGTH_LONG).show();
+                }
+                else if (TextUtils.isEmpty(zqPath)){
+                    Toast.makeText(this,"正前图片不能为空",Toast.LENGTH_LONG).show();
+                }
+                else if (TextUtils.isEmpty(zhfPath)){
+                    Toast.makeText(this,"正后图片不能为空",Toast.LENGTH_LONG).show();
                 }
 
                 else{
                     Log.e("TAG","BeanFlag.Flag=="+ BeanFlag.Flag);
-                    if(BeanFlag.Flag){
+                    if(!BeanFlag.Flag){//fragment1进来，需要补充车源
                         mydialog=new Mydialog(this,"请稍等...");
+                        Log.e("TAG","fragemtn1进来点击提交");
                         Log.e("TAG","先上传图片===="+zqfPath);
                         Log.e("TAG","先上传图片"+(TextUtils.isEmpty(zqfPath)&&TextUtils.isEmpty(zqPath)&&TextUtils.isEmpty(zhfPath)));
                         if(zqfPath.contains("http")
@@ -457,34 +503,37 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                         }
                     }else {
 
-                        if (TextUtils.isEmpty(zqfPath)){
-                            Toast.makeText(this,"左前45°图片不能为空",Toast.LENGTH_LONG).show();
-                        }
-                        else if (TextUtils.isEmpty(zqPath)){
-                            Toast.makeText(this,"正前图片不能为空",Toast.LENGTH_LONG).show();
-                        }
-                        else if (TextUtils.isEmpty(zhfPath)){
-                            Toast.makeText(this,"正后图片不能为空",Toast.LENGTH_LONG).show();
-                        } else if (TextUtils.isEmpty(img4Path)){
-                            Toast.makeText(this,"img4Path正后图片不能为空",Toast.LENGTH_LONG).show();
-                        } else if (TextUtils.isEmpty(img5Path)){
-                            Toast.makeText(this,"img5Path正后图片不能为空",Toast.LENGTH_LONG).show();
-                        } else if (TextUtils.isEmpty(img6Path)){
-                            Toast.makeText(this,"img6Path正后图片不能为空",Toast.LENGTH_LONG).show();
-                        } else if (TextUtils.isEmpty(img7Path)){
-                            Toast.makeText(this,"img7Path正后图片不能为空",Toast.LENGTH_LONG).show();
-                        } else if (TextUtils.isEmpty(img8Path)){
-                            Toast.makeText(this,"img8Path正后图片不能为空",Toast.LENGTH_LONG).show();
-                        } else if (TextUtils.isEmpty(img9Path)){
-                            Toast.makeText(this,"img9Path正后图片不能为空",Toast.LENGTH_LONG).show();
-                        }else {
-//                            mydialog.show();
-                            initGetDate(CartID);
-//                            Log.e("TAG", "修改=" + zqfPath);
-//                            updateImag(zqfPath);
-//                            updateImag(zqPath);
-//                            updateImag(zhfPath);
-                        }
+//                        if (TextUtils.isEmpty(zqfPath)){
+//                            Toast.makeText(this,"左前45°图片不能为空",Toast.LENGTH_LONG).show();
+//                        }
+//                        else if (TextUtils.isEmpty(zqPath)){
+//                            Toast.makeText(this,"正前图片不能为空",Toast.LENGTH_LONG).show();
+//                        }
+//                        else if (TextUtils.isEmpty(zhfPath)){
+//                            Toast.makeText(this,"正后图片不能为空",Toast.LENGTH_LONG).show();
+//                        }
+////                        else if (TextUtils.isEmpty(img4Path)){
+////                            Toast.makeText(this,"img4Path正后图片不能为空",Toast.LENGTH_LONG).show();
+////                        } else if (TextUtils.isEmpty(img5Path)){
+////                            Toast.makeText(this,"img5Path正后图片不能为空",Toast.LENGTH_LONG).show();
+////                        } else if (TextUtils.isEmpty(img6Path)){
+////                            Toast.makeText(this,"img6Path正后图片不能为空",Toast.LENGTH_LONG).show();
+////                        } else if (TextUtils.isEmpty(img7Path)){
+////                            Toast.makeText(this,"img7Path正后图片不能为空",Toast.LENGTH_LONG).show();
+////                        } else if (TextUtils.isEmpty(img8Path)){
+////                            Toast.makeText(this,"img8Path正后图片不能为空",Toast.LENGTH_LONG).show();
+////                        } else if (TextUtils.isEmpty(img9Path)){
+////                            Toast.makeText(this,"img9Path正后图片不能为空",Toast.LENGTH_LONG).show();
+////                        }
+//                        else {//对应Flag为false,从巡场过来的
+////                            mydialog.show();
+////                            initGetDate(CartID);//保存本地数据库
+////                            Log.e("TAG", "修改=" + zqfPath);
+////                            updateImag(zqfPath);
+////                            updateImag(zqPath);
+////                            updateImag(zhfPath);
+//updateCartMsg(CartID);
+//                        }
                     }
                 }
                 break;
@@ -1028,6 +1077,24 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                     img9Path=FileUtil.getJpegName();
                 }
             }
+        } // 扫描二维码/条码回传
+        else if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
+            if (data != null) {
+                String content = data.getStringExtra(Constant.CODED_CONTENT);
+//                Toast.makeText(getActivity(),"扫描结果为："+content,Toast.LENGTH_SHORT).show();
+                Log.e("TAG","扫描结果为=="+content);
+//                扫描结果为==http://tjkg.zgcw.cn:9008/carinfo.html?muid=tianjin001&code=5158
+//                Intent intent =new Intent(getActivity(),WebViewActivity.class);
+//                Intent intent=new Intent(this,BuMessageActivity.class);
+//                intent.putExtra("url",content);
+//                String arr[]=content.split("&");
+//                Log.e("TAG","arr[1]="+arr[1].toString());//=5158
+//                int index=arr[1].toString().indexOf("=");//获取等号的位置
+//                String cartID=arr[1].substring(index+1,arr[1].length());
+//                Log.e("TAG","cartID=="+cartID);
+//                intent.putExtra("cartID",cartID);
+//                startActivity(intent);
+            }
         }
     }
     MyBroadcastReceiver myBroadcastReceiver;
@@ -1530,15 +1597,16 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                         &&!TextUtils.isEmpty(img7UrlPath)&&!TextUtils.isEmpty(img8UrlPath)&&!TextUtils.isEmpty(img9UrlPath)){
                     //上传全部信息
                     Log.e("TAG","上传补录车量信息====="+BeanFlag.Flag);
-                    if(BeanFlag.Flag){
-                        //修改接口
-                        Log.e("TAG","修改接口");
-//                        setCartMsg();
-                        updateCartMsg(CartID);
-                    }else {
-                        Log.e("TAG","上传接口");
-                        updateCartMsg(CartID);
-                    }
+                    updateCartMsg(CartID);
+//                    if(BeanFlag.Flag){
+//                        //修改接口
+//                        Log.e("TAG","修改接口");
+////                        setCartMsg();
+//                        updateCartMsg(CartID);
+//                    }else {
+//                        Log.e("TAG","上传接口");
+//                        updateCartMsg(CartID);
+//                    }
 
                 }
             }

@@ -87,6 +87,7 @@ public class Fragment1 extends Fragment implements AdapterView.OnItemClickListen
          initView();
 
          img_topright.setOnClickListener(this);
+         img_topright.setVisibility(View.GONE);//隐藏右上角扫描图标
          return view;
     }
 
