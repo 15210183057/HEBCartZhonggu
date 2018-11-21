@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/Img3"
                     android:layout_centerHorizontal="true"
-                    android:text="已上传车源" />
+                    android:text="巡场" />
             </RelativeLayout>
 
             <RelativeLayout

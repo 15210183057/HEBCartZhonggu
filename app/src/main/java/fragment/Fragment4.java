@@ -40,6 +40,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import bean.BUCartListBeanNUm;
+import bean.UserBean;
 import camera.FileUtil;
 import mycamare.TakePhoteActivity;
 import View.CircleImageView;
@@ -62,6 +63,7 @@ public class Fragment4 extends Fragment implements View.OnClickListener{
     private View popView;
     private PopupWindow window;
     ImageView selectImag;
+    private TextView tv_username;
 
     //拍照传递回来的uri
     MyReciver myReciver;
@@ -99,6 +101,8 @@ public class Fragment4 extends Fragment implements View.OnClickListener{
         tv_shangchuan_num=view.findViewById(R.id.tv_shangchuan_num);
         tv_yue_num=view.findViewById(R.id.tv_yue_num);
         tv_yue_num.setText(BUCartListBeanNUm.total);
+        tv_username=view.findViewById(R.id.tv_username);
+        tv_username.setText("用户名："+UserBean.username);
     }
 
     @Override

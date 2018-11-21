@@ -32,6 +32,9 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -41,6 +44,7 @@ import java.util.List;
 
 import adapter.MyLvAdapter3;
 import bean.BUCartListBeanNUm;
+import bean.BeanFlag;
 import bean.BuCartListBean;
 import bean.NameAndTel;
 import bean.UserBean;
@@ -135,8 +139,8 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         lv.setOnItemClickListener(this);
         adapter=new MyLvAdapter3(list,getActivity());
         lv.setAdapter(adapter);
-//        refreshLayout.setEnableAutoLoadmore(false);
-//        refreshLayout.setEnableRefresh(false);
+        refreshLayout.setEnableAutoLoadmore(true);
+        refreshLayout.setEnableRefresh(true);
         if(list!=null) {
             adapter = new MyLvAdapter3(list, getActivity());
             lv.setAdapter(adapter);
@@ -266,6 +270,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         requestParams.addBodyParameter("page",current_page+"");
         requestParams.addBodyParameter("makeup","2");
         requestParams.addBodyParameter("groupid",UserBean.groupids);
+        requestParams.addBodyParameter("status","3");
         if(!TextUtils.isEmpty(quyu_ID)) {
             requestParams.addBodyParameter("merchantid", quyu_ID);
         }
@@ -290,6 +295,17 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
 
                 }
                 NameAndTellist1.addAll(NameAndTel.NameAndTellist);
+                try {
+                    JSONArray jsonArray=new JSONArray(result);
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject jsonObject=jsonArray.getJSONObject(i);
+                        String pages=jsonObject.getString("pages");
+                        tv_topcenter.setText("巡场车辆"+new JSONObject(pages).getString("total")+"辆");//设置title
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
@@ -312,7 +328,7 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
             public void onFinished() {
 
                 Log.e("TAG","list=="+list.size());
-                tv_topcenter.setText(list.size()+"");//设置title
+//                tv_topcenter.setText(list.size()+"");//设置title
                 Log.e("TAG","title=="+BUCartListBeanNUm.total);
                 if(list!=null) {
                     adapter.notifyDataSetChanged();
@@ -326,28 +342,31 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         super.onResume();
         Log.e("TAG","f3=onResume");
 //        getBuCartList(i);
+        list.clear();
+        i=1;
+        getBuCartList(i);
     }
 
     @Override
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         Log.e("TAG","f3=onHiddenChanged");
-//        if(!hidden){
-//            list.clear();
 //            if(!mydialog.isShowing()){
 //                mydialog.show();
 //            }
-//            getBuCartList(1);
-//            i=1;
-//            Log.e("TAG","显示11");
-//
-//        }
-//        else{
+
+
+
 //            Log.e("TAG","显示22");
 //            tv_quyu.setText("按车商信息搜索");
 //            quyu_ID="";
 //            btn_serach.setVisibility(View.GONE);
-//        }
+        if(!hidden){
+            list.clear();
+            i=1;
+            getBuCartList(i);
+            Log.e("TAG","显示11");
+        }
     }
 
     @Override
@@ -419,6 +438,8 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
         public void onReceive(Context context, Intent intent) {
             if(intent.getAction().equals("delete")) {
                 i=1;
+                list.clear();
+                NameAndTellist1.clear();
                 getBuCartList(i);
             }
             if(intent.getAction().equals("f3")){
@@ -448,13 +469,20 @@ public class Fragment3 extends Fragment implements AdapterView.OnItemClickListen
 //                Intent intent =new Intent(getActivity(),WebViewActivity.class);
                 Intent intent = new Intent(getActivity(), BuMessageActivity.class);
                 intent.putExtra("url", content);
-                String arr[] = content.split("&");
-                Log.e("TAG", "arr[1]=" + arr[1].toString());//=5158
-                int index = arr[1].toString().indexOf("=");//获取等号的位置
-                String cartID = arr[1].substring(index + 1, arr[1].length());
-                Log.e("TAG", "cartID==" + cartID);
-                intent.putExtra("cartID", cartID);
-                startActivity(intent);
+                if(content.contains("http")){
+//                    String arr[] = content.split("&");
+//                    Log.e("TAG", "arr[1]=" + arr[1].toString());//=5158
+//                    int index = arr[1].toString().indexOf("=");//获取等号的位置
+//                    String cartID = arr[1].substring(index + 1, arr[1].length());
+//                    Log.e("TAG", "cartID==" + cartID);
+//                    intent.putExtra("cartID", cartID);
+                    intent.putExtra("Flag","true");
+                    intent.putExtra("strUrl",content);
+                    intent.putExtra("xunchang","xunchang");
+                    startActivity(intent);
+                }else {
+                    Toast.makeText(getContext(),"此标签没有车辆信息",Toast.LENGTH_SHORT).show();
+                }
             }
         }
     }

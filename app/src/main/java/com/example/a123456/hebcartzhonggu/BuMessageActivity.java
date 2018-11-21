@@ -95,11 +95,12 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
     private ImageView img_paizhao;
     private EditText edit_num;
     private View view;
-    private PopupWindow window,window2,window3;
-    private View popView,popView2,popView3;
+    private PopupWindow window,window2,window3,window4;
+    private View popView,popView2,popView3,popView4;
     private TextView tv_paizhao,tv_canle,tv_xiangce;
     private TextView tv_paizhao2,tv_canle2,tv_xiangce2;
     private TextView tv_paizhao3,tv_canle3,tv_xiangce3;
+    private TextView tv_paizhao4,tv_canle4,tv_xiangce4;
     private ImageView img_topleft,img_topright;
     private TextView tv_topcenter;
     private TextView tv_time;//注册日期
@@ -110,7 +111,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
     private Button btn_commit;
     private LinearLayout linear3_newfragment,linear_nameandtel;
     private TextView tv_quyue,tv_cartFenlei;//tv_cartFenlei 车辆分类
-    private TextView tv_cartmodel;
+    private TextView tv_cartmodel,tv_status;
     List imgListPath=new ArrayList();
     Mydialog mydialog;
     String zqfPath,zqPath,zhfPath,img4Path,img5Path,img6Path,img7Path,img8Path,img9Path;
@@ -122,6 +123,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
     String picID,currentID;//接收销售人员姓名和电话,当前ID
     private String picName;
     public String str;
+    String status;
     SharedUtils utils = new SharedUtils();
     public int count ;//记录保存多少条数据
     String posion;
@@ -139,6 +141,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
     private RelativeLayout relative_saomiao;//扫描获取车源编号
     private int REQUEST_CODE_SCAN = 111;//扫描状态码
     private LinearLayout linear_celiang;//中间布局--车源编号以下，里程以上
+    int successCount=0;//记录成功上传图片个数
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -150,8 +153,28 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         successdialog=new Mydialog(BuMessageActivity.this,"修改成功，稍后自动跳转...");
         CartID= getIntent().getStringExtra("cartID");
         Log.e("TAG","接收到的itemid=="+CartID);
-        getItemCartDate();
         String str=getIntent().getStringExtra("Flag");
+        //巡场扫描跳转
+        String strURL=getIntent().getStringExtra("strUrl");
+        String strxunchagn=getIntent().getStringExtra("xunchang");
+        if(!TextUtils.isEmpty(str)&&str.equals("true")){//巡场进入，只能查看，不能修改提交
+            BeanFlag.Flag=true;
+            Log.e("TAG","这里巡场经来的");
+            linear_celiang.setVisibility(View.VISIBLE);
+//            btn_commit.setVisibility(View.GONE);
+        }else{
+            BeanFlag.Flag=false;//首页进入
+            linear_celiang.setVisibility(View.GONE);
+//            btn_commit.setVisibility(View.VISIBLE);
+        }
+        if(!TextUtils.isEmpty(strxunchagn)) {
+            if (!TextUtils.isEmpty(strURL)) {
+                getRFID(strURL);
+            }
+        }else{
+            getItemCartDate();
+        }
+
         //设置vin不可编辑
         edit_num.setFocusableInTouchMode(false);
         edit_num.setFocusable(false);
@@ -161,15 +184,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         edt_name.setFocusableInTouchMode(false);
         tv_tel.setFocusable(false);
 
-        if(!TextUtils.isEmpty(str)&&str.equals("true")){//巡场进入，只能查看，不能修改提交
-            BeanFlag.Flag=true;
-            linear_celiang.setVisibility(View.VISIBLE);
-            btn_commit.setVisibility(View.GONE);
-        }else{
-            BeanFlag.Flag=false;//首页进入
-            linear_celiang.setVisibility(View.GONE);
-            btn_commit.setVisibility(View.VISIBLE);
-        }
+
         posion=getIntent().getStringExtra("i");
         if(!utils.readXML(MyApplication.cartlistmsg,"count",this).isEmpty()) {
             count = Integer.parseInt(utils.readXML(MyApplication.cartlistmsg, "count", this));
@@ -202,6 +217,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         edt_licheng=findViewById(R.id.edt_licheng);//里程
         tv_quyue=findViewById(R.id.tv_quyue);
         tv_cartFenlei=findViewById(R.id.tv_cartFenlei);
+        tv_status=findViewById(R.id.tv_status);//车辆状态
         //设置里程和价格的数据，小数点后为0的话不现实0
 //        getSubStr(edt_price);
 //        getSubStr(edt_licheng);
@@ -229,7 +245,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         img_paizhao.setOnClickListener(this);
 //        tv_time.setOnClickListener(this);
         btn_commit.setOnClickListener(this);
-
+        tv_status.setOnClickListener(this);
         edit_num.addTextChangedListener(new MyEditTextChangeListener(edit_num));
         edt_licheng.addTextChangedListener(new MyEditTextChangeListener(edt_licheng));
         edt_price.addTextChangedListener(new MyEditTextChangeListener(edt_price));
@@ -300,10 +316,15 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         config.setShake(true);
         SMintent.putExtra(Constant.INTENT_ZXING_CONFIG, config);
         switch (view.getId()) {
+            case R.id.tv_status:
+                getStatus();
+                break;
             case R.id.tv_carnum:
+                BeanFlag.Flag=false;
                 startActivityForResult(SMintent, REQUEST_CODE_SCAN);
                 break;
             case R.id.relative_saomiao:
+                BeanFlag.Flag=false;
                 startActivityForResult(SMintent, REQUEST_CODE_SCAN);
                 break;
             case R.id.img_left:
@@ -317,13 +338,14 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.tv_getmodel:
                 //获取车型车系车牌
-                if (!TextUtils.isEmpty(edit_num.getText().toString())
-                        && !TextUtils.isEmpty(tv_time.getText().toString())
-                        && !tv_time.getText().toString().equals("请选择日期")) {
-                    getPrice("model");
-                } else {
-                    Toast.makeText(this, "vin码或注册日期不能为空", Toast.LENGTH_LONG).show();
-                }
+//                if (!TextUtils.isEmpty(edit_num.getText().toString())
+//                        && !TextUtils.isEmpty(tv_time.getText().toString())
+//                        && !tv_time.getText().toString().equals("请选择日期")) {
+//                    getPrice("model");
+//                } else {
+//                    Toast.makeText(this, "vin码或注册日期不能为空", Toast.LENGTH_LONG).show();
+//                }
+                Toast.makeText(BuMessageActivity.this,"不可修改品牌车型车系",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tv_getprice:
                 //获取价格
@@ -341,7 +363,8 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 startActivity(intentS);
                 break;
             case R.id.img_paizhao:
-                getPopView();
+//                getPopView();
+                Toast.makeText(BuMessageActivity.this,"不可修改车辆VIN编号",Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tv_paizhao:
                 if(setPermissions()) {
@@ -374,6 +397,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 startActivity(intent);
                 break;
             case R.id.btn_commit:
+                successCount=0;
 //                updateImag(zqfPath);
 //                updateImag(zqPath);
 //                updateImag(zhfPath);
@@ -383,7 +407,8 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 if (TextUtils.isEmpty(tv_carnum.getText().toString())||tv_carnum.getText().toString().trim().equals("请扫描二维码获取车源编号")){
                     tv_carnum.setBackgroundResource(R.drawable.rednull);
                     Toast.makeText(this,"车源编号不能为空",Toast.LENGTH_LONG).show();
-                }else if (TextUtils.isEmpty(tv_quyue.getText().toString())||tv_quyue.getText().toString().trim().equals("请选择车商信息")){
+                }else
+                    if (TextUtils.isEmpty(tv_quyue.getText().toString())||tv_quyue.getText().toString().trim().equals("请选择车商信息")){
                     tv_quyue.setBackgroundResource(R.drawable.rednull);
                     Toast.makeText(this,"车商信息不能为空",Toast.LENGTH_LONG).show();
                 }else if (!IsNullEdit(edit_num)||edit_num.getText().toString().length()!=17){
@@ -414,7 +439,9 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 }
                 else if(!IsNullEdit(edt_price)){
                     Toast.makeText(this,"价格不能为空",Toast.LENGTH_LONG).show();
-                }else if (TextUtils.isEmpty(zqfPath)){
+                }else if (TextUtils.isEmpty(tv_status.getText().toString())||tv_status.getText().toString().trim().equals("请选择车辆状态")) {
+                        tv_status.setBackgroundResource(R.drawable.rednull);
+                        Toast.makeText(this,"车辆状态不能为空",Toast.LENGTH_LONG).show();}else if (TextUtils.isEmpty(zqfPath)){
                     Toast.makeText(this,"左前45°图片不能为空",Toast.LENGTH_LONG).show();
                 }
                 else if (TextUtils.isEmpty(zqPath)){
@@ -534,6 +561,80 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
 ////                            updateImag(zhfPath);
 //updateCartMsg(CartID);
 //                        }
+                        mydialog=new Mydialog(this,"请稍等...");
+                        Log.e("TAG","fragemtn1进来点击提交");
+                        Log.e("TAG","先上传图片===="+zqfPath);
+                        Log.e("TAG","先上传图片"+(TextUtils.isEmpty(zqfPath)&&TextUtils.isEmpty(zqPath)&&TextUtils.isEmpty(zhfPath)));
+                        if(zqfPath.contains("http")
+                                &&zqPath.contains("http")
+                                &&zhfPath.contains("http")
+                                &&TextUtils.isEmpty(img4Path)&&TextUtils.isEmpty(img5Path)&&TextUtils.isEmpty(img6Path)
+                                &&TextUtils.isEmpty(img7Path)&&TextUtils.isEmpty(img8Path)&&TextUtils.isEmpty(img9Path)){
+                            //走修改接口
+//                            setCartMsg();
+                            updateCartMsg(CartID);
+                            mydialog.show();
+                            Log.e("TAG","走修改接口");
+                        }else{
+                            mydialog.show();
+                            Log.e("TAG","修改图片==zqfPath="+zqfPath);
+                            Log.e("TAG","修改图片==zqPath="+zqPath);
+                            Log.e("TAG","修改图片==zhfPath="+zhfPath);
+                            Log.e("TAG","修改图片==img4Path="+img4Path);
+                            Log.e("TAG","修改图片==img5Path="+img5Path);
+                            Log.e("TAG","修改图片==img6Path="+img6Path);
+                            Log.e("TAG","修改图片==img7Path="+img7Path);
+                            Log.e("TAG","修改图片==img8Path="+img8Path);
+                            Log.e("TAG","修改图片==img9Path="+img9Path);
+                            Log.e("TAG","修改图片zqf=boolean=="+(!TextUtils.isEmpty(zqPath)&&!zqPath.contains("http")));
+                            imgCount=0;
+                            if(!TextUtils.isEmpty(zqfPath)&&!zqfPath.contains("http")){
+                                imgCount++;
+                                zqfUrlPath="";
+                                updateImag(zqfPath);
+                            }
+                            if(!TextUtils.isEmpty(zqPath)&&!zqPath.contains("http")){
+                                imgCount++;
+                                zfUrlPath="";
+                                updateImag(zqPath);
+                            }
+                            if(!TextUtils.isEmpty(zhfPath)&&!zhfPath.contains("http")){
+                                imgCount++;
+                                zhfUrlPath="";
+                                updateImag(zhfPath);
+                            }
+                            if(!TextUtils.isEmpty(img4Path)){
+                                imgCount++;
+                                img4UrlPath="";
+                                updateImag(img4Path);
+                            }
+                            if(!TextUtils.isEmpty(img5Path)){
+                                imgCount++;
+                                img5UrlPath="";
+                                updateImag(img5Path);
+                            }
+                            if(!TextUtils.isEmpty(img6Path)){
+                                imgCount++;
+                                img6UrlPath="";
+                                updateImag(img6Path);
+                            }
+                            if(!TextUtils.isEmpty(img7Path)){
+                                imgCount++;
+                                img7UrlPath="";
+                                updateImag(img7Path);
+                            }
+                            if(!TextUtils.isEmpty(img8Path)){
+                                imgCount++;
+                                img8UrlPath="";
+                                updateImag(img8Path);
+                            }
+                            if(!TextUtils.isEmpty(img9Path)){
+                                imgCount++;
+                                img9UrlPath="";
+                                updateImag(img9Path);
+                            }
+
+                        }
                     }
                 }
                 break;
@@ -645,9 +746,78 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 guohuID="1";//未过户
                 window3.dismiss();
                 break;
+            case R.id.tv_pop_xiajia:
+                if(window4.isShowing()){
+                    window4.dismiss();
+                }
+                tv_status.setText("下架");
+                tv_status.setBackgroundResource(R.drawable.juxingnull);
+                status="0";
+                break;
+            case R.id.tv_pop_zhengchang:
+                if (window4.isShowing()){
+                    window4.dismiss();
+                }
+                tv_status.setText("正常");
+                tv_status.setBackgroundResource(R.drawable.juxingnull);
+                status="1";
+                break;
         }
     }
+    //车辆状态
+    private void getStatus(){
+        popView4= View.inflate(this,R.layout.mystatus_popview,null);
+        LinearLayout pop_linear=popView4.findViewById(R.id.pop_linear4);
+        tv_paizhao4=popView4.findViewById(R.id.tv_pop_zhengchang);
+        tv_xiangce4=popView4.findViewById(R.id.tv_pop_xiajia);
+        tv_canle4=popView4.findViewById(R.id.tv_canle3);
+        window4=new PopupWindow(this);
+        int w = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+        int h = View.MeasureSpec.makeMeasureSpec(0,View.MeasureSpec.UNSPECIFIED);
+        pop_linear.measure(w, h);
+        int pop_height = pop_linear.getMeasuredHeight();
+        int pop_width = pop_linear.getMeasuredWidth();
+        int width=this.getWindowManager().getDefaultDisplay().getWidth();
+        int height=this.getWindowManager().getDefaultDisplay().getHeight();
+        Log.e("TAG","测量333333333h="+pop_height+"=="+width+"=="+(window3==null));
 
+        window4.setWidth(width);
+        window4.setHeight(pop_height);
+        // 设置PopupWindow的背景
+        window4.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+        // 设置PopupWindow是否能响应外部点击事件
+        window4.setOutsideTouchable(true);
+        // 设置PopupWindow是否能响应点击事件
+        window4.setTouchable(true);
+        // 显示PopupWindow，其中：
+        // 第一个参数是PopupWindow的锚点，第二和第三个参数分别是PopupWindow相对锚点的x、y偏移
+        window4.setContentView(popView4);
+        window4.setAnimationStyle(R.style.animTranslate);
+        window4.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                WindowManager.LayoutParams lp=BuMessageActivity.this.getWindow().getAttributes();
+                lp.alpha=1.0f;
+                BuMessageActivity.this.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+                BuMessageActivity.this.getWindow().setAttributes(lp);
+            }
+        });
+        window4.showAtLocation(tv_status, Gravity.BOTTOM,0,0);
+//        window3.showAsDropDown(Tv_guohu);
+//        window3.showAsDropDown(Tv_guohu,0,0,Gravity.NO_GRAVITY);
+        WindowManager.LayoutParams lp=BuMessageActivity.this.getWindow().getAttributes();
+        lp.alpha=0.3f;
+        BuMessageActivity.this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
+        BuMessageActivity.this.getWindow().setAttributes(lp);
+        // 或者也可以调用此方法显示PopupWindow，其中：
+        // 第一个参数是PopupWindow的父View，第二个参数是PopupWindow相对父View的位置，
+        // 第三和第四个参数分别是PopupWindow相对父View的x、y偏移
+        // window.showAtLocation(parent, gravity, x, y);
+        tv_xiangce4.setOnClickListener(this);
+        tv_paizhao4.setOnClickListener(this);
+//        tv_canle3.setOnClickListener(this);
+        Log.e("TAG","window33333333=="+window4.getWidth()+"height=="+window4.getHeight());
+    }
     // 获取价格
     private void getPrice(final String string) {
         mydialog1.show();
@@ -1083,6 +1253,13 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 String content = data.getStringExtra(Constant.CODED_CONTENT);
 //                Toast.makeText(getActivity(),"扫描结果为："+content,Toast.LENGTH_SHORT).show();
                 Log.e("TAG","扫描结果为=="+content);
+//                {"rfid":"d2a13ab3730b446aae8e6bc37cb014cb","carinfo":[]}
+//                if(content.length()>32){
+//                    Toast.makeText(BuMessageActivity.this,"此标签已绑定车辆",Toast.LENGTH_SHORT).show();
+//                }else {
+//                    tv_carnum.setText(content + "");
+                    getRFID(content);
+//                }
 //                扫描结果为==http://tjkg.zgcw.cn:9008/carinfo.html?muid=tianjin001&code=5158
 //                Intent intent =new Intent(getActivity(),WebViewActivity.class);
 //                Intent intent=new Intent(this,BuMessageActivity.class);
@@ -1131,6 +1308,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 tv_cartmodel.setBackgroundResource(R.drawable.juxingnull);
                 tv_time.setBackgroundResource(R.drawable.juxingnull);
                 tv_cartFenlei.setBackgroundResource(R.drawable.juxingnull);
+                tv_status.setBackgroundResource(R.drawable.juxingnull);
                 img_newfragment.setBackgroundResource(R.drawable.zq45d);
                 img2_newfragment.setBackgroundResource(R.drawable.zqf);
                 img3_newfragment.setBackgroundResource(R.drawable.zhf);
@@ -1301,6 +1479,7 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 tv_time.setText("");
                 tv_cartmodel.setText("");
                 tv_cartFenlei.setText("");
+                tv_status.setText("");
                 ZQFBean.zqpath="";ZQBean.zqpath="";ZHFBean.zhfpath="";str="";
                 zqfPath="";zqPath="";zhfPath="";
                 edit_num.setFocusableInTouchMode(true);
@@ -1424,8 +1603,15 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
-                Log.e("TAG","详情为==："+result);
+                Log.e("TAG","详情为==："+result+"==");
               list=GetJsonUtils.CartListItem(BuMessageActivity.this,result);
+              Log.e("TAG","车源编号："+(TextUtils.isEmpty(list.get(0).rfid_id))+"=="+list.get(0).rfid_id.equals("null")+"=="+list.get(0).rfid_id);
+              if(TextUtils.isEmpty(list.get(0).rfid_id)||list.get(0).rfid_id.equals("null")){
+                  tv_carnum.setText("请扫描二维码获取车源编号");
+              }else{
+                  tv_carnum .setText(list.get(0).rfid_id+"");
+              }
+                Log.e("TAG","详情为==："+tv_carnum.getText());
               tv_quyue.setText(list.get(0).quyuName);
               quyuID=list.get(0).quyuID;
               edit_num.setText(list.get(0).vin);
@@ -1463,6 +1649,12 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 }else{
                     Tv_guohu.setText("未过户");
                 }
+                status=list.get(0).status;
+                if(status.equals("0")){
+                    tv_status.setText("下架");
+                }else{
+                    tv_status.setText("正常");
+                }
                 edt_licheng.setText(list.get(0).mileage);
                 edt_price.setText(list.get(0).price);
                 zqfPath=list.get(0).img1;
@@ -1471,31 +1663,41 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 zqfUrlPath=list.get(0).img1;
                 zfUrlPath=list.get(0).img2;
                 zhfUrlPath=list.get(0).img3;
+                img4UrlPath=list.get(0).img4;
+                img5UrlPath=list.get(0).img5;
+                img6UrlPath=list.get(0).img6;
+                img7UrlPath=list.get(0).img7;
+                img8UrlPath=list.get(0).img8;
+                img9UrlPath=list.get(0).img9;
                 if(list.get(0).img1.contains("http")) {
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img1+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img_newfragment);
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img1+"?x-oss-process=style/233_162").placeholder(R.drawable.zq45d).error(R.drawable.zq45d).into(img_newfragment);
                 }
                 if(list.get(0).img2 .contains("http")) {
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img2+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img2_newfragment);
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img2+"?x-oss-process=style/233_162").placeholder(R.drawable.zqf).error(R.drawable.zqf).into(img2_newfragment);
                 }
                 if(list.get(0).img3 .contains("http")){
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img3+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img3_newfragment);
-                } if(BeanFlag.Flag) {
-                    Log.e("TAG","img4=="+list.get(0).img4);
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img4+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img4_newfragment);
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img5+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img5_newfragment);
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img6+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img6_newfragment);
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img7+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img7_newfragment);
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img8+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img8_newfragment);
-                    Glide.with(BuMessageActivity.this).load(list.get(0).img9+"?x-oss-process=style/233_162").placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(img9_newfragment);
-                    Log.e("TAG","img4=="+list.get(0).img4);
-                    img4UrlPath=list.get(0).img4;
-                    img5UrlPath=list.get(0).img5;
-                    img6UrlPath=list.get(0).img6;
-                    img7UrlPath=list.get(0).img7;
-                    img8UrlPath=list.get(0).img8;
-                    img9UrlPath=list.get(0).img9;
-                    Log.e("TAG","接收img4=="+img4UrlPath);
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img3+"?x-oss-process=style/233_162").placeholder(R.drawable.zhf).error(R.drawable.zhf).into(img3_newfragment);
                 }
+                if(list.get(0).img4.contains("http")) {
+                    Log.e("TAG", "img4==" + list.get(0).img4);
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img4 + "?x-oss-process=style/233_162").placeholder(R.drawable.yh45d).error(R.drawable.yh45d).into(img4_newfragment);
+                }
+                if(list.get(0).img5.contains("http")){
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img5+"?x-oss-process=style/233_162").placeholder(R.drawable.fdjc).error(R.drawable.fdjc).into(img5_newfragment);
+                }
+                if(list.get(0).img6.contains("http")){
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img6+"?x-oss-process=style/233_162").placeholder(R.drawable.lt).error(R.drawable.lt).into(img6_newfragment);
+                }
+                if(list.get(0).img7.contains("http")){
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img7+"?x-oss-process=style/233_162").placeholder(R.drawable.td).error(R.drawable.td).into(img7_newfragment);
+                }
+                if(list.get(0).img8.contains("http")){
+                    Glide.with(BuMessageActivity.this).load(list.get(0).img8+"?x-oss-process=style/233_162").placeholder(R.drawable.wd).error(R.drawable.wd).into(img8_newfragment);
+                }
+                 if(list.get(0).img9.contains("http")) {
+                     Glide.with(BuMessageActivity.this).load(list.get(0).img9 + "?x-oss-process=style/233_162").placeholder(R.drawable.zktzz).error(R.drawable.zktzz).into(img9_newfragment);
+                 }
+
             }
 
             @Override
@@ -1538,9 +1740,12 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
 //           params.setMaxRetryCount(2);
         Log.e("TAG","参数--"+params.getParams("imgdata"));
         Log.e("TAG","上传图片URLparams=="+params);
+
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override
             public void onSuccess(String result) {
+
+                successCount++;
                 Log.e("TAG","图片上传结果---"+result);
                 Log.e("TAG","select4=="+"\n"+path+"\n"+img4Path+"\n"+path.equals(img4Path));
                 if(!TextUtils.isEmpty(path)&&path.equals(zqfPath)){
@@ -1592,9 +1797,11 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
                 Log.e("TAG","上传图片结果img8UrlPath图片="+img8UrlPath);
                 Log.e("TAg","上传图片结果img9UrlPath图片="+img9UrlPath);
 //                Log.e("TAG","三张大图上传结果=="+(!TextUtils.isEmpty(ZHFBean.zhfpath)&&!TextUtils.isEmpty(ZQBean.zqpath)&&!TextUtils.isEmpty(ZQFBean.zqpath)));
+//                &&!TextUtils.isEmpty(img4UrlPath)&&!TextUtils.isEmpty(img5UrlPath)&&!TextUtils.isEmpty(img6UrlPath)
+//                        &&!TextUtils.isEmpty(img7UrlPath)&&!TextUtils.isEmpty(img8UrlPath)&&!TextUtils.isEmpty(img9UrlPath)
+                Log.e("TAG","successCount=="+successCount+"======imgCount=="+imgCount);
                 if(!TextUtils.isEmpty(zqfUrlPath)&&!TextUtils.isEmpty(zfUrlPath)&&!TextUtils.isEmpty(zhfUrlPath)
-                        &&!TextUtils.isEmpty(img4UrlPath)&&!TextUtils.isEmpty(img5UrlPath)&&!TextUtils.isEmpty(img6UrlPath)
-                        &&!TextUtils.isEmpty(img7UrlPath)&&!TextUtils.isEmpty(img8UrlPath)&&!TextUtils.isEmpty(img9UrlPath)){
+                       &&(successCount==imgCount) ){
                     //上传全部信息
                     Log.e("TAG","上传补录车量信息====="+BeanFlag.Flag);
                     updateCartMsg(CartID);
@@ -1724,7 +1931,9 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
 //        requestParams.addBodyParameter("isDaTing",fenleiID);
 //        requestParams.addBodyParameter("transterstatus",guohuID);
         requestParams.addBodyParameter("makeup","2");
-        requestParams.setMaxRetryCount(2);
+        requestParams.addBodyParameter("rfid_id",tv_carnum.getText().toString());//扫描结果rfid标签值        requestParams.setMaxRetryCount(2);
+        requestParams.addBodyParameter("status",status);//车辆状态
+
         Log.e("TAG","上传地址=="+requestParams.getUri());
         Log.e("TAG","上传参数=="+requestParams.getBodyParams());
         Log.e("TAG","上传URL=="+requestParams);
@@ -1831,5 +2040,150 @@ public class BuMessageActivity extends BaseActivity implements View.OnClickListe
            window3.dismiss();
        }
        finish();
+    }
+    private  void getRFID(final String strUrl){
+        RequestParams params=new RequestParams(strUrl);
+        x.http().get(params, new Callback.CommonCallback<String>() {
+            @Override
+            public void onSuccess(String result) {
+                Log.e("TAG","result=="+result);
+//                {"rfid":"d2a13ab3730b446aae8e6bc37cb014cb","carinfo":[]}
+                try {
+                    JSONObject jsonObject=new JSONObject(result);
+                    String carinfo=jsonObject.getString("carinfo");
+                    JSONObject jsonObject1=new JSONObject(carinfo);
+                    String carID=jsonObject1.getString("carid");
+                    if(BeanFlag.Flag){//巡场进来
+                        Log.e("TAG","!TextUtils.isEmpty(carID)"+carID);
+                        if(TextUtils.isEmpty(carID)||carID.equals("null")){
+                            Log.e("TAG","不进屋");
+                            Toast.makeText(BuMessageActivity.this, "此标签未绑定车辆信息", Toast.LENGTH_SHORT).show();
+                        }else{
+                            //巡场扫描进入，解析并且展示
+                            list=GetJsonUtils.CartListItem(BuMessageActivity.this,result);
+                            Log.e("TAG","车源编号："+(TextUtils.isEmpty(list.get(0).rfid_id))+"=="+list.get(0).rfid_id.equals("null")+"=="+list.get(0).rfid_id);
+                            if(TextUtils.isEmpty(list.get(0).rfid_id)||list.get(0).rfid_id.equals("null")){
+                                tv_carnum.setText("请扫描二维码获取车源编号");
+                            }else{
+                                tv_carnum .setText(list.get(0).rfid_id+"");
+                            }
+                            Log.e("TAG","详情为==："+tv_carnum.getText());
+                            tv_quyue.setText(list.get(0).quyuName);
+                            quyuID=list.get(0).quyuID;
+                            edit_num.setText(list.get(0).vin);
+                            tv_time.setText(list.get(0).regTime);
+                            picID=list.get(0).NameTelID;
+
+                            edt_name.setText(list.get(0).contact_name);
+                            tv_tel.setText(list.get(0).tel);
+                            brandid=list.get(0).brandid;
+                            seriesid=list.get(0).seriseID;
+                            modelid=list.get(0).modelID;
+                            brangName=list.get(0).brandName;
+                            seriseName=list.get(0).seriseName;
+                            cartName=list.get(0).modelName;
+                            tv_cartmodel.setText(list.get(0).modelName);
+                            fenleiID=list.get(0).isDaTing;
+                            if(fenleiID.equals("1")){
+                                tv_cartFenlei.setText("大厅车辆");
+                            }else if(fenleiID.equals("2")){
+                                tv_cartFenlei.setText("市场车辆");
+                            }
+                            else if(fenleiID.equals("3")){
+                                tv_cartFenlei.setText("商户自用车");
+                            }
+                            else if(fenleiID.equals("4")){
+                                tv_cartFenlei.setText("新车登记商户卡车辆");
+                            }
+                            else if(fenleiID.equals("5")){
+                                tv_cartFenlei.setText("职工车辆");
+                            }
+                            guohuID=list.get(0).transterstatus;
+                            if(guohuID.equals("0")){
+                                //已过户
+                                Tv_guohu.setText("已过户");
+                            }else{
+                                Tv_guohu.setText("未过户");
+                            }
+                            status=list.get(0).status;
+                            if(status.equals("0")){
+                                tv_status.setText("下架");
+                            }else{
+                                tv_status.setText("正常");
+                            }
+                            status=list.get(0).status;
+                            edt_licheng.setText(list.get(0).mileage);
+                            edt_price.setText(list.get(0).price);
+                            zqfPath=list.get(0).img1;
+                            zqPath=list.get(0).img2;
+                            zhfPath=list.get(0).img3;
+                            zqfUrlPath=list.get(0).img1;
+                            zfUrlPath=list.get(0).img2;
+                            zhfUrlPath=list.get(0).img3;
+                            img4UrlPath=list.get(0).img4;
+                            img5UrlPath=list.get(0).img5;
+                            img6UrlPath=list.get(0).img6;
+                            img7UrlPath=list.get(0).img7;
+                            img8UrlPath=list.get(0).img8;
+                            img9UrlPath=list.get(0).img9;
+                            if(list.get(0).img1.contains("http")) {
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img1+"?x-oss-process=style/233_162").placeholder(R.drawable.zq45d).error(R.drawable.zq45d).into(img_newfragment);
+                            }
+                            if(list.get(0).img2 .contains("http")) {
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img2+"?x-oss-process=style/233_162").placeholder(R.drawable.zqf).error(R.drawable.zqf).into(img2_newfragment);
+                            }
+                            if(list.get(0).img3 .contains("http")){
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img3+"?x-oss-process=style/233_162").placeholder(R.drawable.zhf).error(R.drawable.zhf).into(img3_newfragment);
+                            }
+                            if(list.get(0).img4.contains("http")) {
+                                Log.e("TAG", "img4==" + list.get(0).img4);
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img4 + "?x-oss-process=style/233_162").placeholder(R.drawable.yh45d).error(R.drawable.yh45d).into(img4_newfragment);
+                            }
+                            if(list.get(0).img5.contains("http")){
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img5+"?x-oss-process=style/233_162").placeholder(R.drawable.fdjc).error(R.drawable.fdjc).into(img5_newfragment);
+                            }
+                            if(list.get(0).img6.contains("http")){
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img6+"?x-oss-process=style/233_162").placeholder(R.drawable.lt).error(R.drawable.lt).into(img6_newfragment);
+                            }
+                            if(list.get(0).img7.contains("http")){
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img7+"?x-oss-process=style/233_162").placeholder(R.drawable.td).error(R.drawable.td).into(img7_newfragment);
+                            }
+                            if(list.get(0).img8.contains("http")){
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img8+"?x-oss-process=style/233_162").placeholder(R.drawable.wd).error(R.drawable.wd).into(img8_newfragment);
+                            }
+                            if(list.get(0).img9.contains("http")) {
+                                Glide.with(BuMessageActivity.this).load(list.get(0).img9 + "?x-oss-process=style/233_162").placeholder(R.drawable.zktzz).error(R.drawable.zktzz).into(img9_newfragment);
+                            }
+                        }
+                    }else{//首页进入
+                        if(TextUtils.isEmpty(carID)||carID.equals("null")){
+                            String rfid=jsonObject.getString("rfid");
+                            tv_carnum.setText(rfid);
+                        }else{
+                            Toast.makeText(BuMessageActivity.this, "此标签已绑定车辆信息", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+            }
+
+            @Override
+            public void onError(Throwable ex, boolean isOnCallback) {
+
+            }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+        });
     }
 }

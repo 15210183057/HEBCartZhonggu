@@ -96,15 +96,44 @@ public class MyLvAdapter3 extends BaseAdapter{
         holder.tv_num1.setText(list.get(i).vin);
         holder.tv_num2.setText(list.get(i).licensePlate);
         holder.tv_model_mylvitem.setText(list.get(i).modelName);
-        holder.btn_xiajia.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(ctx,"点击下架",Toast.LENGTH_LONG);
-                Log.e("TAG","点击下架=="+i);
-                newAlert alert=new newAlert(ctx,i);
-                alert.show();
-            }
-        });
+        if(list.get(i).status.equals("0")){
+            holder.btn_xiajia.setText("已下架");
+//            holder.btn_xiajia.setClickable(false);
+//            holder.btn_xiajia.setOnClickListener(null);
+            holder.btn_xiajia.setBackgroundResource(R.color.bule);
+            holder.btn_xiajia.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+//                    Toast.makeText(ctx,"点击下架",Toast.LENGTH_LONG);
+//                    Log.e("TAG","点击下架=="+i);
+//                    newAlert alert=new newAlert(ctx,i);
+//                    alert.show();
+                }
+            });
+        }else{
+            holder.btn_xiajia.setText("下架");
+            holder.btn_xiajia.setBackgroundResource(R.drawable.denglu_bg);
+            holder.btn_xiajia.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(ctx,"点击下架",Toast.LENGTH_LONG);
+                    Log.e("TAG","点击下架=="+i);
+                    h=0;
+                    newAlert alert=new newAlert(ctx,i);
+                    alert.show();
+                }
+            });
+
+        }
+//        holder.btn_xiajia.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                Toast.makeText(ctx,"点击下架",Toast.LENGTH_LONG);
+//                Log.e("TAG","点击下架=="+i);
+//                newAlert alert=new newAlert(ctx,i);
+//                alert.show();
+//            }
+//        });
         holder.tv_time.setText("采集时间："+list.get(i).time);
         holder.tv_user.setText("采集员："+ UserBean.username);
         holder.tv_price.setText("价格："+list.get(i).price+"万");
@@ -123,6 +152,7 @@ public class MyLvAdapter3 extends BaseAdapter{
         RequestParams params=new RequestParams(getInterface.UpCartData);
         params.addBodyParameter("id",list.get(i).ListID);
         params.addBodyParameter("status","0");
+        params.addBodyParameter("revise_admin=",UserBean.id);
         Log.e("TAG","下架url=="+params);
         x.http().post(params, new Callback.CommonCallback<String>() {
             @Override

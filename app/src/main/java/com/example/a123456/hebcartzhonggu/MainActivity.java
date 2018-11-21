@@ -22,6 +22,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.Toast;
 
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,11 +33,17 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.List;
 
+import View.GetJsonUtils;
+import application.MyApplication;
 import base.BaseActivity;
 import bean.UserBean;
+import jiekou.getInterface;
 import utils.AppUtils;
 import utils.CommonProgressDialog;
+import utils.Mydialog;
+import utils.SharedUtils;
 
 public class MainActivity extends BaseActivity {
     private CommonProgressDialog commonProgressDialog;
@@ -112,9 +122,10 @@ public class MainActivity extends BaseActivity {
             Log.e("TAG","y用户名=="+ UserBean.username);
 //            setPermissions();
             if(!TextUtils.isEmpty(UserBean.username)&&!TextUtils.isEmpty(UserBean.password)){
-                Intent intent=new Intent(MainActivity.this,FrameActivity.class);
-                startActivity(intent);
-                finish();
+//                Intent intent=new Intent(MainActivity.this,FrameActivity.class);
+//                startActivity(intent);
+//                finish();
+                getLogin(UserBean.username,UserBean.password);
             }else{
                 Intent intent=new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
@@ -404,9 +415,10 @@ public class MainActivity extends BaseActivity {
         Log.e("TAG","onActivityResult方法=requestCode="+requestCode+"=resultCode"+resultCode+"=data");
         if(requestCode==2){
             if(!TextUtils.isEmpty(UserBean.username)&&!TextUtils.isEmpty(UserBean.password)){
-                Intent intent=new Intent(MainActivity.this,FrameActivity.class);
-                startActivity(intent);
-                finish();
+//                Intent intent=new Intent(MainActivity.this,FrameActivity.class);
+//                startActivity(intent);
+//                finish();
+                getLogin(UserBean.username,UserBean.password);
             }else{
                 Intent intent=new Intent(MainActivity.this,LoginActivity.class);
                 startActivity(intent);
@@ -414,5 +426,72 @@ public class MainActivity extends BaseActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    private void getLogin(String name, final String pwd){
+
+
+        //判断用户名和密码是否为空
+        if(!TextUtils.isEmpty(name)&&!TextUtils.isEmpty(pwd)){
+            //登陆，发送请求
+            final RequestParams params=new RequestParams(getInterface.loginUser);
+            params.addBodyParameter("username",name);
+            params.addBodyParameter("pass",pwd);
+            params.addBodyParameter("json","1");
+
+            x.http().post(params, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    Log.e("TAG","result=="+result);
+                    List<UserBean> list= GetJsonUtils.getLogin(MainActivity.this,result);
+                    //打印groups
+//                    String str=UserBean.groups.substring(1,UserBean.groups.length());
+//                    String str=username.substring(1,username.length());
+//                    Log.e("TAG","截图后=="+str);
+//                    String laseStr=str;
+//                    stringBuilder=new StringBuilder();
+//                    Log.e("TAG","字符串=="+str);
+//                    String strspil=stringBuilder.append(str+",").toString();
+//                    Log.e("TAG","拼接后=="+strspil);
+//                    String arr[]=strspil.split(",");
+//                    Log.e("TAG","数组=="+arr);
+//                    for(int i=0;i<arr.length;i++){
+//                        Log.e("TAG","数组值为=="+arr[i].toString());
+//                    }
+                    //登陆成功，保存用户名和密码到SP，并跳转
+
+                    if(UserBean.status.equals("1")) {
+                        SharedUtils utils = new SharedUtils();
+                        utils.saveXML(MyApplication.usermsg,"username", UserBean.username, MainActivity.this);
+                        utils.saveXML(MyApplication.usermsg,"password", pwd, MainActivity.this);
+                        utils.saveXML(MyApplication.usermsg,"groupids", UserBean.groupids, MainActivity.this);
+                        utils.saveXML(MyApplication.usermsg,"userid", UserBean.id,MainActivity.this);
+                        utils.saveXML(MyApplication.usermsg,"groupid", UserBean.groupid,MainActivity.this);
+                        Intent intent = new Intent(MainActivity.this, FrameActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
+//            Toast.makeText(LoginActivity.this,"点击登陆",Toast.LENGTH_SHORT).show();
+
+
+        }else{
+            Toast.makeText(MainActivity.this,"用户名或密码不可为空",Toast.LENGTH_SHORT).show();
+        }
     }
 }

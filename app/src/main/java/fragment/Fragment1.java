@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,6 +25,9 @@ import com.yzq.zxinglibrary.android.CaptureActivity;
 import com.yzq.zxinglibrary.bean.ZxingConfig;
 import com.yzq.zxinglibrary.common.Constant;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -38,22 +42,23 @@ import bean.UserBean;
 import jiekou.getInterface;
 import View.GetJsonUtils;
 import utils.Mydialog;
-
+import View.LineGridView;
 import static android.app.Activity.RESULT_OK;
 
 public class Fragment1 extends Fragment implements AdapterView.OnItemClickListener,View.OnClickListener{
-    private View view;
     private ImageView img_topleft,img_topright;
     private TextView tv_topcenter;
     RecyclerView recyclerView;
     RefreshLayout refreshLayout;
-    ListView lv;
+//    ListView lv;
+    LineGridView lv;
     private List<BuCartListBean> list;
     private MyLvAdapter adapter;
     private int count;
     private int i=1;//默认加载第一页数据
     private int REQUEST_CODE_SCAN = 111;
     Mydialog mydialog;
+    View view;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +70,15 @@ public class Fragment1 extends Fragment implements AdapterView.OnItemClickListen
         super.onHiddenChanged(hidden);
         list.clear();
         getBuCartList(i);
+        Log.e("TAG","f1--onHiddenChanged");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        list.clear();
+        getBuCartList(i);
+        Log.e("TAG","f1--onResume");
     }
 
     @Override
@@ -242,7 +256,7 @@ public class Fragment1 extends Fragment implements AdapterView.OnItemClickListen
 //    }
     //网络请求列表
     private void getBuCartList(int current_page){
-        RequestParams requestParams=new RequestParams(getInterface.getBuCartList);
+        final RequestParams requestParams=new RequestParams(getInterface.getBuCartList);
 //        json=1&pagesize=10&where=blu=1 and groupid in(5,3,2) and status = 1
 //        mkerp.zgcw.cn/api/api_car/getMylist?userid=16&page=1&merchantid=72&makeup=0
         requestParams.addBodyParameter("userid",UserBean.id);
@@ -250,6 +264,7 @@ public class Fragment1 extends Fragment implements AdapterView.OnItemClickListen
 //        requestParams.addBodyParameter("merchantid","244");
         requestParams.addBodyParameter("makeup","1");
         requestParams.addBodyParameter("groupid",UserBean.groupids);
+//        &pagesize=1自定义条数
 //        requestParams.addBodyParameter("vin","666");
 //        requestParams.addBodyParameter("where","blu=0 and groupid in("+ UserBean.groupids+") and status=1");
        Log.e("TAG","requestParams接口拼接地址为=="+requestParams+"");
@@ -267,6 +282,18 @@ public class Fragment1 extends Fragment implements AdapterView.OnItemClickListen
                 }else{
 
                 }
+                try {
+                    JSONArray jsonArray=new JSONArray(result);
+                    for(int i=0;i<jsonArray.length();i++){
+                        JSONObject jsonObject=jsonArray.getJSONObject(i);
+                        String pages=jsonObject.getString("pages");
+                        tv_topcenter.setText("待补录车辆"+new JSONObject(pages).getString("total")+"辆");//设置title
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
             }
 
@@ -285,7 +312,7 @@ public class Fragment1 extends Fragment implements AdapterView.OnItemClickListen
             @Override
             public void onFinished() {
                 mydialog.dismiss();
-                tv_topcenter.setText(list.size()+"");//设置title
+
                 Log.e("TAG","title=="+BUCartListBeanNUm.total);
                 if(list!=null) {
                     adapter.notifyDataSetChanged();

@@ -68,7 +68,7 @@ public class GetJsonUtils {
                 userBean.groupid=object.getString("groupid");
                userBean.groupids=object.getString("groupids");
                Log.e("TAG","group==="+userBean.groupids);
-                Toast.makeText(ctx,"登陆成功",Toast.LENGTH_SHORT).show();
+//                Toast.makeText(ctx,"登陆成功",Toast.LENGTH_SHORT).show();
             }else{
                 userBean.msg=object.getString("msg");
                 Log.e("TAG","msg=="+userBean.msg);
@@ -491,6 +491,7 @@ public class GetJsonUtils {
                 buCartListBean.isDaTing=jsonObject1.getString("isDaTing");
                 buCartListBean.transterstatus=jsonObject1.getString("transterstatus");
                 buCartListBean.NameTelID=jsonObject1.getString("selluserid");
+                buCartListBean.status=jsonObject1.getString("status");
                 String str=jsonObject1.getString("sellsinfo");
                 if(!str.equals("null")) {
                     Log.e("TAG", "str==" + str);
@@ -638,6 +639,8 @@ public class GetJsonUtils {
                 buCartListBean.seriseName=jsonObject1.getString("series_name");
                 buCartListBean.isDaTing=jsonObject1.getString("isdating");
                 buCartListBean.transterstatus=jsonObject1.getString("transterstatus");
+                buCartListBean.rfid_id=jsonObject1.getString("rfid_id");
+                buCartListBean.status = jsonObject1.getString("status");
 //                buCartListBean.NameTelID=jsonObject1.getString("selluserid");
                 String str=jsonObject1.getString("sellsinfo");
                 if(!str.equals("null")) {

@@ -17,8 +17,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="测试"
+        android:textColor="@color/white"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
+        android:layout_centerInParent="true"
         android:textSize="18sp"/>
     <View
         android:layout_width="50dp"
@@ -26,7 +27,8 @@
         android:background="@drawable/titlebar"
         android:layout_below="@id/tv_center"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="3dp"/>
+        android:layout_marginTop="3dp"
+        android:visibility="gone"/>
     <ImageView
         android:id="@+id/img_right"
         android:layout_width="25dp"
@@ -35,5 +37,6 @@
         android:layout_marginRight="10dp"
         android:layout_centerVertical="true"
         android:src="@mipmap/ic_launcher"
-        android:scaleType="fitXY"/>
+        android:scaleType="fitXY"
+        />
 </RelativeLayout>

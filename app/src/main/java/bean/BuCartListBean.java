@@ -12,4 +12,6 @@ public class BuCartListBean {
     public String img1,img2,img3,img4,img5,img6,img7,img8,img9;
     public String ListID,NameTelID,transterstatus;
     public String cartID;
+    public String rfid_id;
+    public String status;//车辆状态，0下架，1上架
 }

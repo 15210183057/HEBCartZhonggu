@@ -47,13 +47,14 @@
                 </RelativeLayout>
 
                 <TextView
-                    android:hint="请扫描二维码获取车源编号"
+                    android:text="请扫描二维码获取车源编号"
                     android:id="@+id/tv_carnum"
                     android:layout_toRightOf="@id/tv_xing"
                     android:layout_toLeftOf="@id/relative_saomiao"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:textSize="14sp"
+                    android:textColor="#000"
                     android:gravity="center_vertical"
                     android:background="@drawable/juxingnull"
                     />
@@ -74,6 +75,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp">
                     <TextView
+                        android:textColor="#B7B7B7"
                         android:id="@+id/tv_quyue"
                         android:text="请选择车商信息"
                         android:layout_width="match_parent"
@@ -146,6 +148,7 @@
                     <EditText
                         android:hint="请输入或拍照上传vin码"
                         android:id="@+id/edt_vinnum"
+                        android:textColor="#B7B7B7"
                         android:layout_toLeftOf="@id/img_paizhao"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -165,6 +168,7 @@
                         android:id="@+id/tv_time"
                         android:layout_width="0dp"
                         android:layout_weight="5"
+                        android:textColor="#B7B7B7"
                         android:layout_height="match_parent"
                         android:text="  请选择日期"
                         android:background="@drawable/juxingnull"
@@ -194,6 +198,7 @@
                         android:completionThreshold="0"
                         android:layout_toLeftOf="@id/img_paizhao"
                         android:layout_width="0dp"
+                        android:textColor="#B7B7B7"
                         android:layout_weight="3"
                         android:hint="请输入姓名"
                         android:textSize="14sp"
@@ -215,6 +220,7 @@
                         android:layout_toLeftOf="@id/img_paizhao"
                         android:layout_width="0dp"
                         android:layout_weight="3"
+                        android:textColor="#B7B7B7"
                         android:layout_height="match_parent"
                         android:background="@drawable/juxingnull"
                         android:text=""
@@ -244,6 +250,7 @@
                         android:layout_marginRight="7dp"
                         android:layout_height="match_parent"
                         android:text="请选择品牌，车系和车型"
+                        android:textColor="#B7B7B7"
                         android:background="@drawable/juxingnull"
                         android:gravity="center_vertical"/>
                     <TextView
@@ -272,6 +279,7 @@
                         android:layout_height="match_parent"
                         android:text="  请选取车辆分类信息"
                         android:background="@drawable/juxingnull"
+                        android:textColor="#B7B7B7"
                         android:gravity="center_vertical"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -296,6 +304,7 @@
                         android:layout_height="match_parent"
                         android:text="  请选择车辆是否过户"
                         android:background="@drawable/juxingnull"
+                        android:textColor="#B7B7B7"
                         android:gravity="center_vertical"/>
                     <TextView
                         android:layout_width="wrap_content"
@@ -372,7 +381,31 @@
                             android:layout_gravity="center_vertical"/>
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp">
+                        <TextView
+                            android:id="@+id/tv_status"
+                            android:layout_width="0dp"
+                            android:layout_weight="5"
+                            android:layout_height="match_parent"
+                            android:text="  请选择车辆状态"
+                            android:textColor="#000"
+                            android:background="@drawable/juxingnull"
+                            android:gravity="center_vertical"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
 
+                            android:text="车辆状态"
+                            android:textSize="16sp"
+                            android:layout_marginLeft="10dp"
+                            android:gravity="center_vertical"/>
+                    </LinearLayout>
                     <LinearLayout
                         android:orientation="horizontal"
                         android:layout_width="match_parent"
@@ -524,7 +557,7 @@
                                 android:layout_gravity="center_horizontal"
                                 android:layout_width="100dp"
                                 android:layout_height="100dp"
-                                android:src="@drawable/zq45d"
+                                android:src="@drawable/yh45d"
                                 android:scaleType="fitXY"
                                 android:id="@+id/img4_newfragment"/>
                             <TextView
